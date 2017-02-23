@@ -1,6 +1,12 @@
 package org.dddjava.collections;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -11,17 +17,26 @@ public class Group<T> {
 		this.members = new HashSet<>(members);
 	}
 
-	//基本アクセス
+	//検査
 	public int size() {
 		return members.size();
 	}
 
-	//検査
+	public boolean isEmpty() {
+		return members.isEmpty();
+	}
 
-	//boolean isEmpty
-	//boolean includes(T member)
-	//boolean contains(Predicate<T> predicate)
-	//int occurrencesOf(Predicate<T> predicate)
+	public boolean includes(T member) {
+		return members.contains(member);
+	}
+
+	public boolean contains(Predicate<T> predicate) {
+		return members.stream().anyMatch(predicate);
+	}
+
+	public int occurrencesOf(Predicate<T> predicate) {
+		return ((int) members.stream().filter(predicate).count());
+	}
 
 	//追加と削除
 	public Group<T> add(T member) {
@@ -35,7 +50,6 @@ public class Group<T> {
 		temporary.remove(member);
 		return new Group<>(temporary);
 	}
-
 
 	//集合演算
 
@@ -68,26 +82,34 @@ public class Group<T> {
 	}
 
 	public T detect(Predicate<T> predicate) {
-		//ToDo 検出
-		//なければ、RuntimeException; NoSuchElement?
-		return null;
+		return members.stream()
+			.filter(predicate).findFirst()
+			.orElseThrow(NoSuchElementException::new);
 	}
 
 	public T detectOrDefault(Predicate<T> predicate, T defaultElement) {
-		//ToDo 検出
-		//なければ、defaultElementを返す
-		return defaultElement;
+		return members.stream()
+			.filter(predicate).findFirst()
+			.orElse(defaultElement);
 	}
 
 	//ToDo 集約演算
 	// max
 	// min
 
-	// ToDo map
+	// 変換
 	// Functionを引数にして、異なる型で、同じ要素数のGroupを返す
+	public <R> Group<R> map(Function<T,R> function) {
+		return new Group<>(members.stream().map(function).collect(Collectors.toSet()));
+	}
+
+	//ファクトリメソッド
+
+	public static <T> Group<T> of(T... args){
+		return new Group<>(Arrays.asList(args));
+	}
 
 	//お約束メソッド
-
 	@Override
 	public boolean equals(Object o) {
 		if (! (o instanceof Group<?>) ) return false;
@@ -99,12 +121,6 @@ public class Group<T> {
 	@Override
 	public int hashCode() {
 		return members.hashCode() ;
-	}
-
-	//ファクトリーメソッド
-
-	public static <T> Group<T> of(T... args){
-		return new Group<>(Arrays.asList(args));
 	}
 
 	@Override
