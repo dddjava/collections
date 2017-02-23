@@ -2,12 +2,13 @@ package org.dddjava.collections;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Group<T> {
 	Set<T> members;
 
-	public Group(Collection<T> source) {
-		new HashSet<>(source);
+	public Group(Collection<T> members) {
+		this.members = new HashSet<>(members);
 	}
 
 	//基本アクセス
@@ -52,20 +53,18 @@ public class Group<T> {
 
 	public Group<T> intersect(Group<T> other) {
 		Set<T> temporary = new HashSet<>(members);
-		temporary.removeAll(other.members);
+		temporary.retainAll(other.members);
 		return new Group<>(temporary);
 	}
 
 	//フィルタリングと検出
 
 	public Group select(Predicate<T> predicate) {
-		//ToDo フィルタリング
-		return new Group<>(members);
+		return new Group<>(members.stream().filter(predicate).collect(Collectors.toSet()));
 	}
 
 	public Group reject(Predicate<T> predicate) {
-		//ToDo 逆フィルタリング
-		return new Group<>(members);
+		return new Group<>(members.stream().filter(predicate.negate()).collect(Collectors.toSet()));
 	}
 
 	public T detect(Predicate<T> predicate) {
@@ -81,42 +80,35 @@ public class Group<T> {
 	}
 
 	//ToDo 集約演算
-	// 全体を一つのオブジェクトで表現する
-	// intValueが使える前提で実装　T instanceOf Number
-
-	// BigDecimalで、桁数と丸め方法を指定して演算への対応方法を検討する　多分、別クラス
-
-	// sum
-	// average
 	// max
 	// min
-	// first sort()して最初の要素を返す
-	// firstOrDefault
-	// last  sort()して最後の要素を返す
-	// lastOrDefault
-
-	//ToDo 変換
-
-	private SortedSet<T> sort() {
-		//Todo
-		// T が comparableであれば、 Collections.sort()
-		// そうでなければ、toString() の結果でソート
-		return null;
-	}
-
-	public T[] asSorted() {
-		//ToDo
-		return null;
-	}
-
-	public T[] asSorted(Comparator<T> comparator) {
-		//ToDo
-		return null;
-	}
 
 	// ToDo map
 	// Functionを引数にして、異なる型で、同じ要素数のGroupを返す
 
-	//ToDo 生成
-	// of( <T> ... )　可変パラメータ
+	//お約束メソッド
+
+	@Override
+	public boolean equals(Object o) {
+		if (! (o instanceof Group<?>) ) return false;
+
+		Group<?> other = (Group<?>) o;
+		return members.equals(other.members);
+	}
+
+	@Override
+	public int hashCode() {
+		return members.hashCode() ;
+	}
+
+	//ファクトリーメソッド
+
+	public static <T> Group<T> of(T... args){
+		return new Group<>(Arrays.asList(args));
+	}
+
+	@Override
+	public String toString() {
+		return members.toString();
+	}
 }
