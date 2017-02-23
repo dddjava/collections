@@ -4,8 +4,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -33,7 +36,27 @@ public class GroupTest {
 
 	@Test
 	public void size() throws Exception {
-		assertEquals(one.size(),3);
+		assertEquals(3,one.size());
+	}
+
+	@Test
+	public void isEmpty() throws Exception {
+		assertFalse(one.isEmpty());
+	}
+	@Test
+	public void includes() throws Exception {
+		assertTrue(one.includes(new BigDecimal("0.1")));
+	}
+	@Test
+	public void contains() throws Exception {
+		Predicate<BigDecimal> predicate = each -> each.compareTo(new BigDecimal("1.0")) > 0 ;
+		assertTrue(one.contains(predicate));
+	}
+
+	@Test
+	public void occurrencesOf() throws Exception {
+		Predicate<BigDecimal> predicate = each -> each.compareTo(new BigDecimal("1.0")) >= 0 ;
+		assertEquals(2,one.occurrencesOf(predicate));
 	}
 
 	@Test
@@ -93,22 +116,33 @@ public class GroupTest {
 
 	@Test
 	public void detect() throws Exception {
+		Predicate<BigDecimal> predicate = each -> each.compareTo(BigDecimal.ONE) > 0 ;
+		assertEquals(new BigDecimal("2.3"),one.detect(predicate));
+	}
 
+	@Test(expected = NoSuchElementException.class)
+	public void detectThrowException() throws Exception {
+		Predicate<BigDecimal> predicate = each -> each.compareTo(BigDecimal.TEN) > 0 ;
+		one.detect(predicate);
 	}
 
 	@Test
 	public void detectOrDefault() throws Exception {
-
+		Predicate<BigDecimal> predicate = each -> each.compareTo(BigDecimal.TEN) > 0 ;
+		assertEquals( BigDecimal.ZERO,one.detectOrDefault(predicate,BigDecimal.ZERO));
 	}
 
 	@Test
-	public void asSorted() throws Exception {
+	public void mapTest() throws Exception {
+		Function<BigDecimal,Integer> function = each -> each.intValue();
 
-	}
+		Group<Integer> result = Group.of(
+			new Integer("0"),
+			new Integer("1"),
+			new Integer("2")
+		);
 
-	@Test
-	public void asSorted1() throws Exception {
-
+		assertTrue(one.map(function).equals(result));
 	}
 
 }
