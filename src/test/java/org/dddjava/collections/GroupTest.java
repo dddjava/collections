@@ -43,10 +43,18 @@ public class GroupTest {
 	public void isEmpty() throws Exception {
 		assertFalse(one.isEmpty());
 	}
+
 	@Test
 	public void includes() throws Exception {
 		assertTrue(one.includes(new BigDecimal("0.1")));
 	}
+
+	@Test
+	public void includesGroup() throws Exception {
+		Group<BigDecimal> other = Group.of(new BigDecimal("0.1"),new BigDecimal("2.3"));
+		assertTrue(one.includes(other));
+	}
+
 	@Test
 	public void contains() throws Exception {
 		Predicate<BigDecimal> predicate = each -> each.compareTo(new BigDecimal("1.0")) > 0 ;
