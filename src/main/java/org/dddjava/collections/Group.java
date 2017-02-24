@@ -30,6 +30,11 @@ public class Group<T> {
 		return members.contains(member);
 	}
 
+	public boolean includes(Group<T> other) {
+		Group<T> intersect = this.intersect(other);
+		return intersect.equals(other);
+	}
+
 	public boolean contains(Predicate<T> predicate) {
 		return members.stream().anyMatch(predicate);
 	}
