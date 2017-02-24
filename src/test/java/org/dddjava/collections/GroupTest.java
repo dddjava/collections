@@ -141,6 +141,20 @@ public class GroupTest {
 	}
 
 	@Test
+	public void reduce() throws Exception {
+		BigDecimal result = new BigDecimal("3.4");
+		assertEquals(result, one.reduce(BigDecimal.ZERO, (one, another) -> one.add(another)));
+	}
+
+	@Test
+	public void mapReduce() throws Exception {
+		String result = "values: 0.1 1.0 2.3 ";
+		assertEquals(result,
+				one.map(each -> each.toString())
+						.reduce("values: ",(one,another)->one + another + " "));
+	}
+
+	@Test
 	public void mapTest() throws Exception {
 		Function<BigDecimal,Integer> function = each -> each.intValue();
 

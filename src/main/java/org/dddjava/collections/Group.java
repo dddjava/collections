@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -44,6 +45,7 @@ public class Group<T> {
 	}
 
 	//追加と削除
+
 	public Group<T> add(T member) {
 		Set<T> temporary = new HashSet<>(members);
 		temporary.add(member);
@@ -98,9 +100,11 @@ public class Group<T> {
 			.orElse(defaultElement);
 	}
 
-	//ToDo 集約演算
-	// max
-	// min
+	// 集約(畳み込み)
+
+	public T reduce(T target, BinaryOperator<T> accumulator) {
+		return members.stream().reduce(target,accumulator);
+	}
 
 	// 変換
 	// Functionを引数にして、異なる型で、同じ要素数のGroupを返す
