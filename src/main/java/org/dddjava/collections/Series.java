@@ -6,6 +6,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+//ToDo Comparator の指定と保存
+//ToDo 仕様の過不足の検討
+
 public class Series<T> {
 	SortedSet<T> members;
 
