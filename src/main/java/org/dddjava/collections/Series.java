@@ -62,7 +62,8 @@ public class Series<T> {
 	//フィルタリングと検出
 
 	public Series select(Predicate<T> predicate) {
-		return new Series<>(members.stream().filter(predicate).collect(Collectors.toSet()));
+		Set<T> temporary = members.stream().filter(predicate).collect(Collectors.toSet());
+		return new Series(temporary, members.comparator());
 	}
 
 	public Series reject(Predicate<T> predicate) {
@@ -99,13 +100,19 @@ public class Series<T> {
 		return new Series<>(Arrays.asList(args));
 	}
 
+	public static <T> Series<T> of(Comparator<T> comparator,T ... args){
+		return new Series<>(Arrays.asList(args),comparator);
+	}
+
 	//お約束メソッド
 	@Override
 	public boolean equals(Object o) {
 		if (! (o instanceof Series<?>)) return false;
 
 		Series<T> other = (Series<T>) o;
-		return members.toString().equals(other.members.toString());
+		List<T> source = new ArrayList<>(members);
+		List<T> target = new ArrayList<>(other.members);
+		return source.equals(target);
 	}
 
 	@Override

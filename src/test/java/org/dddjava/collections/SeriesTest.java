@@ -8,6 +8,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class SeriesTest
 {
@@ -40,11 +43,13 @@ public class SeriesTest
     @Test(expected = ClassCastException.class)
     public void constructUnComparable() throws Exception{
         Series<SomethingUnComparable> series = new Series<>(listUnComparable);
+        assertNull(series.members.comparator());
     }
 
     @Test
     public void constructUnComparableWithComparator() throws Exception{
         Series<SomethingUnComparable> series = new Series<SomethingUnComparable>(listUnComparable,(each,other)->each.toString().compareTo(other.toString()));
+        assertNotNull(series.members.comparator());
     }
 
     @Test
@@ -55,13 +60,17 @@ public class SeriesTest
 
     @Test
     public void constructUnComparableWithComparingReverse() throws Exception{
+        Comparator<SomethingUnComparable> stringAndReverse = Comparator.comparing(SomethingUnComparable::toString,Comparator.reverseOrder());
+        Comparator<SomethingUnComparable> toStringAndReverse =(each,other)->each.toString().compareTo(other.toString()) * -1  ;
+
         Series<SomethingUnComparable> series =
-                new Series<SomethingUnComparable>(listUnComparable, Comparator.comparing(SomethingUnComparable::toString, Comparator.reverseOrder() ));
-        Series<SomethingUnComparable> expected = new Series<SomethingUnComparable>(listUnComparable,(each,other)->each.toString().compareTo(other.toString()) * -1 );
+                new Series<SomethingUnComparable>(listUnComparable, stringAndReverse);
+        Series<SomethingUnComparable> expected = new Series<>(listUnComparable,toStringAndReverse);
         System.out.println(expected.toString());
         System.out.println(series.toString());
         System.out.println(expected.equals(series));
-        assertTrue(expected.equals( series));
+        assertEquals(expected,series);
+
     }
 
     @Test
@@ -107,9 +116,22 @@ public class SeriesTest
     }
 
     @Test
-    public void select() throws Exception
+    public void selectComparable() throws Exception
     {
+        Series<SomethingComparable> expect = Series.of(abcComparable);
+        Series<SomethingComparable> source = new Series<SomethingComparable>(listComparable);
+        Series<SomethingComparable> target = source.select(each->each.equals(abcComparable));
+        assertEquals(expect,target);
+    }
 
+    @Test
+    public void selectUnComparable() throws Exception
+    {
+        Comparator<SomethingUnComparable> comparator = Comparator.comparing(SomethingUnComparable::toString);
+        Series<SomethingUnComparable> expect = Series.of(comparator,abcUnComparable);
+        Series<SomethingUnComparable> source = new Series<SomethingUnComparable>(listUnComparable,comparator);
+        Series<SomethingUnComparable> target = source.select(each->each.equals(abcUnComparable));
+        assertEquals(expect,target);
     }
 
     @Test
@@ -145,6 +167,7 @@ public class SeriesTest
     @Test
     public void ofComparable() throws Exception{
         Series<SomethingComparable> series = Series.of(abcComparable,xyzComparable);
+        assertNull(series.members.comparator());
     }
 
     @Test(expected = ClassCastException.class)
