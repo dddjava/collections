@@ -4,7 +4,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+
+import static junit.framework.TestCase.assertTrue;
 
 public class SeriesTest
 {
@@ -39,9 +42,26 @@ public class SeriesTest
         Series<SomethingUnComparable> series = new Series<>(listUnComparable);
     }
 
-    @Test()
+    @Test
     public void constructUnComparableWithComparator() throws Exception{
         Series<SomethingUnComparable> series = new Series<SomethingUnComparable>(listUnComparable,(each,other)->each.toString().compareTo(other.toString()));
+    }
+
+    @Test
+    public void constructUnComparableWithComparing() throws Exception{
+        Series<SomethingUnComparable> series =
+                new Series<SomethingUnComparable>(listUnComparable, Comparator.comparing(SomethingUnComparable::toString));
+    }
+
+    @Test
+    public void constructUnComparableWithComparingReverse() throws Exception{
+        Series<SomethingUnComparable> series =
+                new Series<SomethingUnComparable>(listUnComparable, Comparator.comparing(SomethingUnComparable::toString, Comparator.reverseOrder() ));
+        Series<SomethingUnComparable> expected = new Series<SomethingUnComparable>(listUnComparable,(each,other)->each.toString().compareTo(other.toString()) * -1 );
+        System.out.println(expected.toString());
+        System.out.println(series.toString());
+        System.out.println(expected.equals(series));
+        assertTrue(expected.equals( series));
     }
 
     @Test

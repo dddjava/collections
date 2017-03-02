@@ -26,4 +26,9 @@ public class SomethingComparable implements Comparable<SomethingComparable> {
 	public int hashCode() {
 		return value.hashCode();
 	}
+
+	@Override
+	public String toString() {
+		return value;
+	}
 }

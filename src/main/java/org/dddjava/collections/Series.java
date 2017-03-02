@@ -102,10 +102,10 @@ public class Series<T> {
 	//お約束メソッド
 	@Override
 	public boolean equals(Object o) {
-		if (o instanceof Series<?>) return false;
+		if (! (o instanceof Series<?>)) return false;
 
-		Series<?> other = (Series<?>) o;
-		return members.equals(other.members);
+		Series<T> other = (Series<T>) o;
+		return members.toString().equals(other.members.toString());
 	}
 
 	@Override
