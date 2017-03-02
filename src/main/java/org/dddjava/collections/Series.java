@@ -16,6 +16,13 @@ public class Series<T> {
 		this.members = new TreeSet<>(members);
 	}
 
+	public Series(Collection<T> members,Comparator<T> comparator) {
+		TreeSet<T> temporary = new TreeSet<>(comparator);
+		temporary.addAll(members);
+		this.members = new TreeSet<>(temporary);
+	}
+
+
 	//検査
 	public int size() {
 		return members.size();
