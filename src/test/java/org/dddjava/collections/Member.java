@@ -1,23 +1,23 @@
 package org.dddjava.collections;
 
-public class SomethingComparable implements Comparable<SomethingComparable> {
+public class Member implements Comparable<Member> {
 	String value ;
 
-	public SomethingComparable(String value) {
+	public Member(String value) {
 		this.value = value;
 	}
 
 	@Override
-	public int compareTo(SomethingComparable other) {
+	public int compareTo(Member other) {
 		return value.compareTo(other.value);
 	}
 
 	@Override
 	public boolean equals(Object o) {
 
-		if (!(o instanceof SomethingComparable )) return false;
+		if (!(o instanceof Member)) return false;
 
-		SomethingComparable other = (SomethingComparable) o;
+		Member other = (Member) o;
 
 		return value.equals(other.value);
 	}

@@ -1,9 +1,9 @@
 package org.dddjava.collections;
 
-public class SomethingUnComparable {
+public class MemberUncomparable {
 	String value ;
 
-	public SomethingUnComparable(String value) {
+	public MemberUncomparable(String value) {
 		this.value = value;
 	}
 

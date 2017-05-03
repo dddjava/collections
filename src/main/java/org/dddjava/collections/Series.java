@@ -6,6 +6,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
+
 //ToDo Comparator の指定と保存
 //ToDo 仕様の過不足の検討
 
@@ -17,7 +19,7 @@ public class Series<T> {
 	}
 
 	public Series(Collection<T> members,Comparator<T> comparator) {
-		TreeSet<T> temporary = new TreeSet<>(comparator);
+		TreeSet<T> temporary = new TreeSet<T>(comparator);
 		temporary.addAll(members);
 		this.members = new TreeSet<>(temporary);
 	}
@@ -123,5 +125,9 @@ public class Series<T> {
 	@Override
 	public String toString() {
 		return members.toString();
+	}
+
+	public static <T> Series withStringBaseComparator(Collection<T> members) {
+		return new Series<T>(members, (each,other) -> each.toString().compareTo(other.toString()));
 	}
 }
