@@ -4,60 +4,45 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Comparator.comparing;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SeriesTestComparableMembers
 {
     static Member abc = new Member("abc");
     static Member xyz = new Member("xyz");
     static Member jkl = new Member("lmn");
-    static List<Member> list = new ArrayList<>();
+
+    static Series<Member> one;
+    static Series<Member> another;
 
 
     @BeforeClass
     public static void beforeClass() {
-        list.add(abc);
-        list.add(xyz);
-        list.add(jkl);
-    }
-
-    @Test
-    public void constructComparable() throws Exception{
-        Series<Member> series = new Series<>(list);
-}
-
-
-
-    @Test
-    public void constructUnComparableWithStringBaseComparator() throws Exception{
-        Series<MemberUncomparable> series = Series.withStringBaseComparator(list);
-        assertNotNull(series.members.comparator());
+        one = Series.of(abc,xyz);
+        another = Series.of(jkl);
     }
 
 
-
     @Test
-    public void size() throws Exception
-    {
-
+    public void size() throws Exception {
+        assertThat(one.size()).isEqualTo(2);
     }
 
     @Test
     public void isEmpty() throws Exception
     {
-
+        Series<Member> target = new Series(Collections.emptyList());
+        assertThat(target.isEmpty()).isTrue();
     }
 
     @Test
     public void includes() throws Exception
     {
-
+        assertThat(one.includes(abc)).isTrue();
     }
 
     @Test
@@ -87,10 +72,9 @@ public class SeriesTestComparableMembers
     @Test
     public void selectComparable() throws Exception
     {
-        Series<Member> expect = Series.of(abc);
-        Series<Member> source = new Series<Member>(list);
-        Series<Member> target = source.select(each->each.equals(abc));
-        assertEquals(expect,target);
+        Series<Member> expected = Series.of(abc);
+        Series<Member> target = one.select(each->each.equals(abc));
+        assertThat(target).isEqualTo(expected);
     }
 
 
@@ -127,7 +111,7 @@ public class SeriesTestComparableMembers
     @Test
     public void ofComparable() throws Exception{
         Series<Member> series = Series.of(abc, xyz);
-        assertNull(series.members.comparator());
+        assertThat(series.members.comparator()).isNull();
     }
 
 }

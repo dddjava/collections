@@ -8,9 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GroupTest {
 
@@ -36,35 +34,35 @@ public class GroupTest {
 
 	@Test
 	public void size() throws Exception {
-		assertEquals(3,one.size());
+		assertThat(one.size()).isEqualTo(3);
 	}
 
 	@Test
 	public void isEmpty() throws Exception {
-		assertFalse(one.isEmpty());
+		assertThat(one.isEmpty()).isFalse();
 	}
 
 	@Test
 	public void includes() throws Exception {
-		assertTrue(one.includes(new BigDecimal("0.1")));
+		assertThat(one.includes(new BigDecimal("0.1"))).isTrue();
 	}
 
 	@Test
 	public void includesGroup() throws Exception {
 		Group<BigDecimal> other = Group.of(new BigDecimal("0.1"),new BigDecimal("2.3"));
-		assertTrue(one.includes(other));
+		assertThat(one.includes(other)).isTrue();
 	}
 
 	@Test
 	public void contains() throws Exception {
 		Predicate<BigDecimal> predicate = each -> each.compareTo(new BigDecimal("1.0")) > 0 ;
-		assertTrue(one.contains(predicate));
+		assertThat(one.contains(predicate)).isTrue();
 	}
 
 	@Test
 	public void occurrencesOf() throws Exception {
 		Predicate<BigDecimal> predicate = each -> each.compareTo(new BigDecimal("1.0")) >= 0 ;
-		assertEquals(2,one.occurrencesOf(predicate));
+		assertThat(one.occurrencesOf(predicate)).isEqualTo(2);
 	}
 
 	@Test
@@ -76,7 +74,7 @@ public class GroupTest {
 				new BigDecimal("2.3")
 		);
 
-		assertTrue(one.union(another).equals(result));
+		assertThat(one.union(another).equals(result)).isTrue();
 	}
 
 	@Test
@@ -85,7 +83,7 @@ public class GroupTest {
 				new BigDecimal("0.1")
 		);
 
-		assertTrue(one.minus(another).equals(result));
+		assertThat(one.minus(another).equals(result)).isTrue();
 	}
 
 	@Test
@@ -95,7 +93,7 @@ public class GroupTest {
 				new BigDecimal("2.3")
 		);
 
-		assertTrue(one.intersect(another).equals(result));
+		assertThat(one.intersect(another).equals(result)).isTrue();
 	}
 
 	@Test
@@ -107,7 +105,7 @@ public class GroupTest {
 				new BigDecimal("2.3")
 		);
 
-		assertTrue(one.select(predicate).equals(result));
+		assertThat(one.select(predicate).equals(result)).isTrue();
 	}
 
 	@Test
@@ -119,13 +117,13 @@ public class GroupTest {
 				new BigDecimal("1.0")
 		);
 
-		assertTrue(one.reject(predicate).equals(result));
+		assertThat(one.reject(predicate).equals(result)).isTrue();
 	}
 
 	@Test
 	public void detect() throws Exception {
 		Predicate<BigDecimal> predicate = each -> each.compareTo(BigDecimal.ONE) > 0 ;
-		assertEquals(new BigDecimal("2.3"),one.detect(predicate));
+		assertThat(one.detect(predicate)).isEqualTo(new BigDecimal("2.3"));
 	}
 
 	@Test(expected = NoSuchElementException.class)
@@ -137,21 +135,26 @@ public class GroupTest {
 	@Test
 	public void detectOrDefault() throws Exception {
 		Predicate<BigDecimal> predicate = each -> each.compareTo(BigDecimal.TEN) > 0 ;
-		assertEquals( BigDecimal.ZERO,one.detectOrDefault(predicate,BigDecimal.ZERO));
+		BigDecimal target = one.detectOrDefault(predicate,BigDecimal.ZERO);
+		assertThat(target).isEqualTo(BigDecimal.ZERO);
 	}
 
 	@Test
 	public void reduce() throws Exception {
-		BigDecimal result = new BigDecimal("3.4");
-		assertEquals(result, one.reduce(BigDecimal.ZERO, (one, another) -> one.add(another)));
+		BigDecimal expected = new BigDecimal("3.4");
+		BigDecimal target = one.reduce(BigDecimal.ZERO, (one, another) -> one.add(another));
+		assertThat(target).isEqualTo(expected);
 	}
 
 	@Test
 	public void mapReduce() throws Exception {
-		String result = "values: 0.1 1.0 2.3 ";
-		assertEquals(result,
-				one.map(each -> each.toString())
-						.reduce("values: ",(one,another)->one + another + " "));
+		String expected = "values: 0.1 1.0 2.3 ";
+
+		Function<BigDecimal,String> mapper = each -> each.toString();
+		String target = one.map(mapper)
+				.reduce("values: ",(one,another)->one + another + " ");
+		assertThat(target).isEqualTo(expected);
+
 	}
 
 	@Test
@@ -164,7 +167,7 @@ public class GroupTest {
 			new Integer("2")
 		);
 
-		assertTrue(one.map(function).equals(result));
+		assertThat(one.map(function).equals(result)).isTrue();
 	}
 
 }

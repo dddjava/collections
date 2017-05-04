@@ -4,11 +4,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
+import java.util.Comparator;
 import static java.util.Comparator.comparing;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class SeriesTestUncomparableMembers
 {
@@ -29,7 +30,6 @@ public class SeriesTestUncomparableMembers
     @Test(expected = ClassCastException.class)
     public void constructUnComparable() throws Exception{
         Series<MemberUncomparable> series = new Series<>(list);
-        assertNull(series.members.comparator());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class SeriesTestUncomparableMembers
                 new Series<>(
                         list, comparing(MemberUncomparable::toString)
                 );
-        assertNotNull(series.members.comparator());
+        assertThat(series.members.comparator()).isNotNull();
     }
 
     @Test
@@ -58,8 +58,7 @@ public class SeriesTestUncomparableMembers
         System.out.println(expected.toString());
         System.out.println(series.toString());
         System.out.println(expected.equals(series));
-        assertEquals(expected,series);
-
+        assertThat(series).isEqualTo(expected);
     }
 
     @Test
@@ -108,10 +107,10 @@ public class SeriesTestUncomparableMembers
     public void selectUnComparable() throws Exception
     {
         Comparator<MemberUncomparable> comparator = comparing(MemberUncomparable::toString);
-        Series<MemberUncomparable> expect = Series.of(comparator, abc);
+        Series<MemberUncomparable> expected = Series.of(comparator, abc);
         Series<MemberUncomparable> source = new Series<MemberUncomparable>(list,comparator);
         Series<MemberUncomparable> target = source.select(each->each.equals(abc));
-        assertEquals(expect,target);
+        assertThat(target).isEqualTo(expected);
     }
 
     @Test

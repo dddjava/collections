@@ -38,6 +38,11 @@ public class Series<T> {
 		return members.contains(member);
 	}
 
+	public boolean includes(Series<T> other) {
+		Series<T> intersect = this.intersect(other);
+		return intersect.equals(other);
+	}
+
 	public boolean contains(Predicate<T> predicate) {
 		return members.stream().anyMatch(predicate);
 	}
@@ -46,6 +51,13 @@ public class Series<T> {
 		return ((int) members.stream().filter(predicate).count());
 	}
 
+
+	//集合演算 （暫定的にプライベート）
+	public Series<T> intersect(Series<T> other) {
+		Set<T> temporary = new TreeSet<>(members);
+		temporary.retainAll(other.members);
+		return new Series<>(temporary);
+	}
 
 	//追加と削除
 
