@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.MonthDay;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -145,16 +146,19 @@ public class GroupTest {
 		assertThat(target).isEqualTo(菊の節句);
 	}
 
-//	@Test
-//	public void mapReduce() throws Exception {
-//		String expected = "values: 0.1 1.0 2.3 ";
-//
-//		Function<BigDecimal,String> mapper = each -> each.toString();
-//		String target = 節句.map(mapper)
-//				.reduce("values: ",(one,another)->one + another + " ");
-//		assertThat(target).isEqualTo(expected);
-//
-//	}
+	@Test
+	public void mapReduce() throws Exception {
+		//TODO 順序性がないので、reduce方法を再検討する
+		String expected = "節句: 7月7日 9月9日 5月5日 1月7日 3月3日 ";
+
+		DateTimeFormatter 月日 = DateTimeFormatter.ofPattern("M月d日");
+		Function<MonthDay,String> 文字列に = each -> each.format(月日);
+		BinaryOperator<String> 追記 = (one,another)->one + another + " ";
+		String target = 節句.map(文字列に)
+				.reduce("節句: ",(one,another)->one + another + " ");
+		assertThat(target).isEqualTo(expected);
+
+	}
 //
 //	@Test
 //	public void mapTest() throws Exception {
