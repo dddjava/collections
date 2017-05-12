@@ -171,20 +171,20 @@ public class GroupTest {
 	@Test
 	public void mapReduce() throws Exception {
 
+		Integer expected = 1+3+5+7+9; //節句の月の整数値の合計
 
-		int thisYear = Year.now().getValue();
+		Function<MonthDay,Integer> 月の整数値 = each -> each.getMonth().getValue();
 
-		LocalDate 元旦 = LocalDate.ofYearDay(thisYear,1);
-		Integer expected = 菊の節句.atYear(thisYear).getDayOfYear();
+		BinaryOperator<Integer> 月の足し算 = (one,another)->one + another;
 
-		Function<MonthDay,Integer> 年初からの期間 =
-				each -> each.atYear(thisYear).getDayOfYear();
+		Integer resultWithTarget= 節句.map(月の整数値).reduce(0,月の足し算);
 
-		BinaryOperator<Integer> 間隔 = (one,another)->one - another;
+		assertThat(resultWithTarget).isEqualTo(expected);
 
-		Integer result = 節句.map(年初からの期間).reduce(0,間隔);
+		Integer resultWithoutTarget= 節句.map(月の整数値).reduce(月の足し算);
 
-		assertThat(result).isEqualTo(expected);
+		assertThat(resultWithoutTarget).isEqualTo(expected);
+
 
 	}
 
