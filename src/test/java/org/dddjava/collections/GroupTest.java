@@ -4,7 +4,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.MonthDay;
+import java.time.Period;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GroupTest {
@@ -29,6 +33,8 @@ public class GroupTest {
 	static MonthDay 正月 = MonthDay.of(1,1);
 	static MonthDay 子供の日 = MonthDay.of(5, 5);
 	static MonthDay 体育の日 = MonthDay.of(10, 10);
+
+	static DateTimeFormatter 月日 = DateTimeFormatter.ofPattern("M月d日");
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -146,31 +152,40 @@ public class GroupTest {
 		assertThat(target).isEqualTo(菊の節句);
 	}
 
+
+	@Test
+	public void mapTest() throws Exception {
+		Function<MonthDay,String> 月日形式に = each -> each.format(月日);
+
+		Group<String> expected = Group.of(
+			"9月9日",
+			"7月7日",
+			"5月5日",
+			"3月3日",
+			"1月7日"
+		);
+
+		assertTrue(節句.map(月日形式に).equals(expected));
+	}
+
 	@Test
 	public void mapReduce() throws Exception {
-		//TODO 順序性がないので、reduce方法を再検討する
-		String expected = "節句: 7月7日 9月9日 5月5日 1月7日 3月3日 ";
 
-		DateTimeFormatter 月日 = DateTimeFormatter.ofPattern("M月d日");
-		Function<MonthDay,String> 文字列に = each -> each.format(月日);
-		BinaryOperator<String> 追記 = (one,another)->one + another + " ";
-		String target = 節句.map(文字列に)
-				.reduce("節句: ",(one,another)->one + another + " ");
-		assertThat(target).isEqualTo(expected);
+
+		int thisYear = Year.now().getValue();
+
+		LocalDate 元旦 = LocalDate.ofYearDay(thisYear,1);
+		Integer expected = 菊の節句.atYear(thisYear).getDayOfYear();
+
+		Function<MonthDay,Integer> 年初からの期間 =
+				each -> each.atYear(thisYear).getDayOfYear();
+
+		BinaryOperator<Integer> 間隔 = (one,another)->one - another;
+
+		Integer result = 節句.map(年初からの期間).reduce(0,間隔);
+
+		assertThat(result).isEqualTo(expected);
 
 	}
-//
-//	@Test
-//	public void mapTest() throws Exception {
-//		Function<BigDecimal,Integer> function = each -> each.intValue();
-//
-//		Group<Integer> result = Group.of(
-//			new Integer("0"),
-//			new Integer("1"),
-//			new Integer("2")
-//		);
-//
-//		assertThat(節句.map(function).equals(result)).isTrue();
-//	}
 
 }
