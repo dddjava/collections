@@ -4,167 +4,183 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GroupTest {
 
-	static Group<BigDecimal> one;
-	static Group<BigDecimal> another;
+	static Group<MonthDay> 節句;
+	static Group<MonthDay> 祭日;
+
+	static MonthDay 七草 = MonthDay.of(1, 7);
+	static MonthDay 桃の節句 = MonthDay.of(3,3);
+	static MonthDay 端午 = MonthDay.of(5, 5);
+	static MonthDay 七夕 = MonthDay.of(7, 7);
+	static MonthDay 菊の節句 = MonthDay.of(9, 9);
+
+	static MonthDay 正月 = MonthDay.of(1,1);
+	static MonthDay 子供の日 = MonthDay.of(5, 5);
+	static MonthDay 体育の日 = MonthDay.of(10, 10);
 
 	@BeforeClass
 	public static void beforeClass() {
-		one = Group.of(
-				new BigDecimal("0.1"),
-				new BigDecimal("1.0"),
-				new BigDecimal("2.3")
-		);
-		another = Group.of(
-				new BigDecimal("1.0"),
-				new BigDecimal("1.2"),
-				new BigDecimal("2.3")
-		);
+		節句 = Group.of(七草,桃の節句,端午,七夕,菊の節句);
+		祭日 = Group.of(正月,子供の日,体育の日);
 
-		System.out.println(one);
-		System.out.println(another);
+		System.out.println(節句);
+		System.out.println(祭日);
 	}
 
 	@Test
 	public void size() throws Exception {
-		assertEquals(3,one.size());
+		assertThat(節句.size()).isEqualTo(5);
 	}
 
 	@Test
 	public void isEmpty() throws Exception {
-		assertFalse(one.isEmpty());
+		assertThat(節句.isEmpty()).isFalse();
 	}
 
 	@Test
 	public void includes() throws Exception {
-		assertTrue(one.includes(new BigDecimal("0.1")));
+		MonthDay 雛祭 = MonthDay.of(3, 3);
+		assertThat(節句.includes(雛祭)).isTrue();
 	}
 
 	@Test
 	public void includesGroup() throws Exception {
-		Group<BigDecimal> other = Group.of(new BigDecimal("0.1"),new BigDecimal("2.3"));
-		assertTrue(one.includes(other));
+		MonthDay 雛祭 = MonthDay.of(3, 3);
+		MonthDay 菖蒲 = MonthDay.of(5, 5);
+
+		Group<MonthDay> こどもの節句 = Group.of(雛祭,菖蒲);
+		assertThat(節句.includes(こどもの節句)).isTrue();
 	}
 
 	@Test
 	public void contains() throws Exception {
-		Predicate<BigDecimal> predicate = each -> each.compareTo(new BigDecimal("1.0")) > 0 ;
-		assertTrue(one.contains(predicate));
+		Predicate<MonthDay> 七夕より後 = each -> each.compareTo(七夕) > 0 ;
+		assertThat(節句.contains(七夕より後)).isTrue();
 	}
 
 	@Test
 	public void occurrencesOf() throws Exception {
-		Predicate<BigDecimal> predicate = each -> each.compareTo(new BigDecimal("1.0")) >= 0 ;
-		assertEquals(2,one.occurrencesOf(predicate));
+		Predicate<MonthDay> 七夕以降 = each -> each.compareTo(七夕) >= 0 ;
+		assertThat(節句.occurrencesOf(七夕以降)).isEqualTo(2);
 	}
 
 	@Test
 	public void union() throws Exception {
-		Group<BigDecimal> result = Group.of(
-				new BigDecimal("0.1"),
-				new BigDecimal("1.0"),
-				new BigDecimal("1.2"),
-				new BigDecimal("2.3")
-		);
+		Group<MonthDay> expected =
+			Group.of(正月,七草,桃の節句,端午,七夕,菊の節句,体育の日 );
 
-		assertTrue(one.union(another).equals(result));
+		assertThat(節句.union(祭日).equals(expected)).isTrue();
 	}
 
 	@Test
 	public void minus() throws Exception {
-		Group<BigDecimal> result = Group.of(
-				new BigDecimal("0.1")
-		);
+		Group<MonthDay> expected = Group.of(七草,桃の節句,七夕,菊の節句 );
 
-		assertTrue(one.minus(another).equals(result));
+		assertThat(節句.minus(祭日).equals(expected)).isTrue();
 	}
 
 	@Test
 	public void intersect() throws Exception {
-		Group<BigDecimal> result = Group.of(
-				new BigDecimal("1.0"),
-				new BigDecimal("2.3")
-		);
+		Group<MonthDay> expected = Group.of(端午);
 
-		assertTrue(one.intersect(another).equals(result));
+		assertThat(節句.intersect(祭日).equals(expected)).isTrue();
 	}
 
 	@Test
 	public void select() throws Exception {
 
-		Predicate<BigDecimal> predicate = each -> each.compareTo(BigDecimal.ONE) > 0 ;
+		Predicate<MonthDay> 七夕以降 = each -> each.compareTo(七夕) >= 0 ;
 
-		Group<BigDecimal> result = Group.of(
-				new BigDecimal("2.3")
-		);
+		Group<MonthDay> 七夕以降の節句 = Group.of(七夕,菊の節句);
 
-		assertTrue(one.select(predicate).equals(result));
+		assertThat(節句.select(七夕以降).equals(七夕以降の節句)).isTrue();
 	}
 
 	@Test
 	public void reject() throws Exception {
-		Predicate<BigDecimal> predicate = each -> each.compareTo(BigDecimal.ONE) > 0 ;
+		Predicate<MonthDay> 七夕以降 = each -> each.compareTo(七夕) >= 0 ;
 
-		Group<BigDecimal> result = Group.of(
-				new BigDecimal("0.1"),
-				new BigDecimal("1.0")
-		);
+		Group<MonthDay> 七夕より前の節句 = Group.of(七草,桃の節句,端午);
 
-		assertTrue(one.reject(predicate).equals(result));
+		assertThat(節句.reject(七夕以降).equals(七夕より前の節句)).isTrue();
 	}
 
 	@Test
 	public void detect() throws Exception {
-		Predicate<BigDecimal> predicate = each -> each.compareTo(BigDecimal.ONE) > 0 ;
-		assertEquals(new BigDecimal("2.3"),one.detect(predicate));
+		Predicate<MonthDay> 七夕より後の節句 = each -> each.compareTo(七夕) > 0 ;
+		assertThat(節句.detect(七夕より後の節句)).isEqualTo(菊の節句);
 	}
 
 	@Test(expected = NoSuchElementException.class)
 	public void detectThrowException() throws Exception {
-		Predicate<BigDecimal> predicate = each -> each.compareTo(BigDecimal.TEN) > 0 ;
-		one.detect(predicate);
+		Predicate<MonthDay> 菊の節句より後の節句 = each -> each.compareTo(菊の節句) > 0 ;
+		節句.detect(菊の節句より後の節句);
 	}
 
 	@Test
 	public void detectOrDefault() throws Exception {
-		Predicate<BigDecimal> predicate = each -> each.compareTo(BigDecimal.TEN) > 0 ;
-		assertEquals( BigDecimal.ZERO,one.detectOrDefault(predicate,BigDecimal.ZERO));
+		Predicate<MonthDay> 菊の節句より後の節句 = each -> each.compareTo(菊の節句) > 0 ;
+
+		MonthDay 既定値 = 七草;
+		MonthDay target = 節句.detectOrDefault(菊の節句より後の節句,七草);
+		assertThat(target).isEqualTo(既定値);
 	}
 
 	@Test
 	public void reduce() throws Exception {
-		BigDecimal result = new BigDecimal("3.4");
-		assertEquals(result, one.reduce(BigDecimal.ZERO, (one, another) -> one.add(another)));
+		BinaryOperator<MonthDay> 遅い節句 =
+				(one, another) -> one.isAfter(another)? one : another;
+		MonthDay target = 節句.reduce(正月, 遅い節句);
+		assertThat(target).isEqualTo(菊の節句);
+	}
+
+
+	@Test
+	public void mapTest() throws Exception {
+		Function<MonthDay,Month> 月に = each -> each.getMonth();
+
+		Group<Month> expected = Group.of(
+				Month.JANUARY,
+				Month.MARCH,
+				Month.MAY,
+				Month.JULY,
+				Month.SEPTEMBER
+		);
+
+		assertTrue(節句.map(月に).equals(expected));
 	}
 
 	@Test
 	public void mapReduce() throws Exception {
-		String result = "values: 0.1 1.0 2.3 ";
-		assertEquals(result,
-				one.map(each -> each.toString())
-						.reduce("values: ",(one,another)->one + another + " "));
-	}
 
-	@Test
-	public void mapTest() throws Exception {
-		Function<BigDecimal,Integer> function = each -> each.intValue();
+		Integer expected = 1+3+5+7+9; //節句の月の整数値の合計
 
-		Group<Integer> result = Group.of(
-			new Integer("0"),
-			new Integer("1"),
-			new Integer("2")
-		);
+		Function<MonthDay,Integer> 月の整数値 = each -> each.getMonth().getValue();
 
-		assertTrue(one.map(function).equals(result));
+		BinaryOperator<Integer> 月の足し算 = (one,another)->one + another;
+
+		Integer resultWithTarget= 節句.map(月の整数値).reduce(0,月の足し算);
+
+		assertThat(resultWithTarget).isEqualTo(expected);
+
+		Integer resultWithoutTarget= 節句.map(月の整数値).reduce(月の足し算);
+
+		assertThat(resultWithoutTarget).isEqualTo(expected);
+
+
 	}
 
 }

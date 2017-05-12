@@ -1,10 +1,6 @@
 package org.dddjava.collections;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -104,6 +100,11 @@ public class Group<T> {
 
 	public T reduce(T target, BinaryOperator<T> accumulator) {
 		return members.stream().reduce(target,accumulator);
+	}
+
+	public T reduce(BinaryOperator<T> accumulator) {
+		Optional<T> result = members.stream().reduce(accumulator);
+		return result.orElseThrow(NoSuchElementException::new);
 	}
 
 	// 変換
