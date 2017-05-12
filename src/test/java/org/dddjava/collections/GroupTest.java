@@ -4,10 +4,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.MonthDay;
-import java.time.Period;
-import java.time.Year;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +30,6 @@ public class GroupTest {
 	static MonthDay 正月 = MonthDay.of(1,1);
 	static MonthDay 子供の日 = MonthDay.of(5, 5);
 	static MonthDay 体育の日 = MonthDay.of(10, 10);
-
-	static DateTimeFormatter 月日 = DateTimeFormatter.ofPattern("M月d日");
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -155,17 +150,17 @@ public class GroupTest {
 
 	@Test
 	public void mapTest() throws Exception {
-		Function<MonthDay,String> 月日形式に = each -> each.format(月日);
+		Function<MonthDay,Month> 月に = each -> each.getMonth();
 
-		Group<String> expected = Group.of(
-			"9月9日",
-			"7月7日",
-			"5月5日",
-			"3月3日",
-			"1月7日"
+		Group<Month> expected = Group.of(
+				Month.JANUARY,
+				Month.MARCH,
+				Month.MAY,
+				Month.JULY,
+				Month.SEPTEMBER
 		);
 
-		assertTrue(節句.map(月日形式に).equals(expected));
+		assertTrue(節句.map(月に).equals(expected));
 	}
 
 	@Test
