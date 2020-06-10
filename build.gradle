@@ -1,10 +1,20 @@
-apply plugin: 'java'
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.2.6.RELEASE'
+}
 
 repositories {
     jcenter()
 }
 
 dependencies {
-    testCompile 'org.assertj:assertj-core:3.6.2'
+    implementation platform("org.springframework.boot:spring-boot-dependencies:2.2.6.RELEASE")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(group: 'org.junit.vintage')
+    }
 }
 
+test {
+    useJUnitPlatform()
+}

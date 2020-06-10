@@ -1,4 +1,4 @@
-package org.dddjava.collections;
+package org.dddjava.collections.series;
 
 import java.util.*;
 import java.util.function.BinaryOperator;
@@ -11,6 +11,10 @@ import static java.util.Comparator.comparing;
 //ToDo Comparator の指定と保存
 //ToDo 仕様の過不足の検討
 
+/**
+ * 順序付きの集合
+ * @param <T>
+ */
 public class Series<T> {
 	SortedSet<T> members;
 

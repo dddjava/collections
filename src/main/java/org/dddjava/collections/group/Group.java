@@ -1,4 +1,4 @@
-package org.dddjava.collections;
+package org.dddjava.collections.group;
 
 import java.util.*;
 
@@ -7,6 +7,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * 集合（重複なし）
+ * @param <T>
+ */
 public class Group<T> {
 	Set<T> members;
 
@@ -23,6 +27,7 @@ public class Group<T> {
 		return members.isEmpty();
 	}
 
+	@Deprecated
 	public boolean includes(T member) {
 		return members.contains(member);
 	}
@@ -32,26 +37,14 @@ public class Group<T> {
 		return intersect.equals(other);
 	}
 
+	@Deprecated
 	public boolean contains(Predicate<T> predicate) {
 		return members.stream().anyMatch(predicate);
 	}
 
+	@Deprecated
 	public int occurrencesOf(Predicate<T> predicate) {
 		return ((int) members.stream().filter(predicate).count());
-	}
-
-	//追加と削除
-
-	public Group<T> add(T member) {
-		Set<T> temporary = new HashSet<>(members);
-		temporary.add(member);
-		return new Group<>(temporary);
-	}
-
-	public Group<T> remove(T member) {
-		Set<T> temporary = new HashSet<>(members);
-		temporary.remove(member);
-		return new Group<>(temporary);
 	}
 
 	//集合演算
@@ -75,21 +68,24 @@ public class Group<T> {
 	}
 
 	//フィルタリングと検出
-
+	@Deprecated
 	public Group select(Predicate<T> predicate) {
 		return new Group<>(members.stream().filter(predicate).collect(Collectors.toSet()));
 	}
 
+	@Deprecated
 	public Group reject(Predicate<T> predicate) {
 		return new Group<>(members.stream().filter(predicate.negate()).collect(Collectors.toSet()));
 	}
 
+	@Deprecated
 	public T detect(Predicate<T> predicate) {
 		return members.stream()
 			.filter(predicate).findFirst()
 			.orElseThrow(NoSuchElementException::new);
 	}
 
+	@Deprecated
 	public T detectOrDefault(Predicate<T> predicate, T defaultElement) {
 		return members.stream()
 			.filter(predicate).findFirst()
@@ -98,10 +94,12 @@ public class Group<T> {
 
 	// 集約(畳み込み)
 
+	@Deprecated
 	public T reduce(T target, BinaryOperator<T> accumulator) {
 		return members.stream().reduce(target,accumulator);
 	}
 
+	@Deprecated
 	public T reduce(BinaryOperator<T> accumulator) {
 		Optional<T> result = members.stream().reduce(accumulator);
 		return result.orElseThrow(NoSuchElementException::new);
@@ -109,15 +107,13 @@ public class Group<T> {
 
 	// 変換
 	// Functionを引数にして、異なる型で、同じ要素数のGroupを返す
+	@Deprecated
 	public <R> Group<R> map(Function<T,R> function) {
 		return new Group<>(members.stream().map(function).collect(Collectors.toSet()));
 	}
 
 	//ファクトリメソッド
 
-	public static <T> Group<T> of(T... args){
-		return new Group<>(Arrays.asList(args));
-	}
 
 	//お約束メソッド
 	@Override
