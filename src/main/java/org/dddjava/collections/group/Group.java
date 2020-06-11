@@ -12,24 +12,20 @@ import java.util.stream.Collectors;
  * @param <T>
  */
 public class Group<T> {
-	Set<T> members;
+	Set<T> elements;
 
-	public Group(Collection<T> members) {
-		this.members = new HashSet<>(members);
+	Group(Set<T> elements) {
+		this.elements = elements;
 	}
 
 	//検査
+
 	public int size() {
-		return members.size();
+		return elements.size();
 	}
 
 	public boolean isEmpty() {
-		return members.isEmpty();
-	}
-
-	@Deprecated
-	public boolean includes(T member) {
-		return members.contains(member);
+		return elements.isEmpty();
 	}
 
 	public boolean includes(Group<T> other) {
@@ -37,100 +33,101 @@ public class Group<T> {
 		return intersect.equals(other);
 	}
 
-	@Deprecated
 	public boolean contains(Predicate<T> predicate) {
-		return members.stream().anyMatch(predicate);
+		return elements.stream().anyMatch(predicate);
 	}
 
-	@Deprecated
-	public int occurrencesOf(Predicate<T> predicate) {
-		return ((int) members.stream().filter(predicate).count());
+	public int countIf(Predicate<T> predicate) {
+		return ((int) elements.stream().filter(predicate).count());
 	}
 
 	//集合演算
 
 	public Group<T> union(Group<T> other) {
-		Set<T> temporary = new HashSet<>(members);
-		temporary.addAll(other.members);
-		return new Group<>(temporary);
+		Set<T> mutableSet = new HashSet<>(elements);
+		mutableSet.addAll(other.elements);
+		return new Group<>(mutableSet);
 	}
 
 	public Group<T> minus(Group<T> other) {
-		Set<T> temporary = new HashSet<>(members);
-		temporary.removeAll(other.members);
-		return new Group<>(temporary);
+		Set<T> mutableSet = new HashSet<>(elements);
+		mutableSet.removeAll(other.elements);
+		return new Group<>(mutableSet);
 	}
 
 	public Group<T> intersect(Group<T> other) {
-		Set<T> temporary = new HashSet<>(members);
-		temporary.retainAll(other.members);
-		return new Group<>(temporary);
+		Set<T> mutableSet = new HashSet<>(elements);
+		mutableSet.retainAll(other.elements);
+		return new Group<>(mutableSet);
 	}
 
-	//フィルタリングと検出
-	@Deprecated
-	public Group select(Predicate<T> predicate) {
-		return new Group<>(members.stream().filter(predicate).collect(Collectors.toSet()));
-	}
+	// フィルタ
 
 	@Deprecated
-	public Group reject(Predicate<T> predicate) {
-		return new Group<>(members.stream().filter(predicate.negate()).collect(Collectors.toSet()));
+	public Group<T> select(Predicate<T> predicate) {
+		return new Group<>(elements.stream().filter(predicate).collect(Collectors.toSet()));
 	}
 
-	@Deprecated
-	public T detect(Predicate<T> predicate) {
-		return members.stream()
-			.filter(predicate).findFirst()
-			.orElseThrow(NoSuchElementException::new);
+	public Group<T> reject(Predicate<T> predicate) {
+		return new Group<>(elements.stream().filter(predicate.negate()).collect(Collectors.toSet()));
 	}
 
-	@Deprecated
-	public T detectOrDefault(Predicate<T> predicate, T defaultElement) {
-		return members.stream()
+	public Group<T> selectOne(Predicate<T> predicate) {
+		T result = elements.stream()
+				.filter(predicate).findFirst()
+				.orElseThrow(NoSuchElementException::new);
+		return new Group(Set.of(result));
+	}
+
+	public Group<T> selectOneOrDefault(Predicate<T> predicate, T defaultElement) {
+		T result = elements.stream()
 			.filter(predicate).findFirst()
 			.orElse(defaultElement);
+		return new Group(Set.of(result));
 	}
 
 	// 集約(畳み込み)
 
 	@Deprecated
 	public T reduce(T target, BinaryOperator<T> accumulator) {
-		return members.stream().reduce(target,accumulator);
+		return elements.stream().reduce(target, accumulator);
 	}
 
 	@Deprecated
 	public T reduce(BinaryOperator<T> accumulator) {
-		Optional<T> result = members.stream().reduce(accumulator);
+		Optional<T> result = elements.stream().reduce(accumulator);
 		return result.orElseThrow(NoSuchElementException::new);
 	}
 
-	// 変換
-	// Functionを引数にして、異なる型で、同じ要素数のGroupを返す
+	// 写像
+
 	@Deprecated
 	public <R> Group<R> map(Function<T,R> function) {
-		return new Group<>(members.stream().map(function).collect(Collectors.toSet()));
+		return new Group<>(elements.stream().map(function).collect(Collectors.toSet()));
 	}
 
-	//ファクトリメソッド
+	// 取り出し
+	public T toElement() {
+		Optional<T> result =  elements.stream().findFirst();
+		return result.orElseThrow(IllegalStateException::new);
+	}
 
-
-	//お約束メソッド
+	// Objectメソッド
 	@Override
-	public boolean equals(Object o) {
-		if (! (o instanceof Group<?>) ) return false;
+	public boolean equals(Object other) {
+		if (! (other instanceof Group<?>) ) return false;
 
-		Group<?> other = (Group<?>) o;
-		return members.equals(other.members);
+		Group<?> otherGroup = (Group<?>) other;
+		return elements.equals(otherGroup.elements);
 	}
 
 	@Override
 	public int hashCode() {
-		return members.hashCode() ;
+		return elements.hashCode() ;
 	}
 
 	@Override
 	public String toString() {
-		return members.toString();
+		return elements.toString();
 	}
 }
