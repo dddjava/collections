@@ -1,6 +1,6 @@
 package org.dddjava.collections.series;
 
-import org.dddjava.collections.ElementUncomparable;
+import org.dddjava.collections.element.ElementUncomparable;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

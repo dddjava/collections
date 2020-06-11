@@ -1,4 +1,4 @@
-package org.dddjava.collections;
+package org.dddjava.collections.element;
 
 import java.util.Objects;
 

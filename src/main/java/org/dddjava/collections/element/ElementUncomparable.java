@@ -1,4 +1,4 @@
-package org.dddjava.collections;
+package org.dddjava.collections.element;
 
 /**
  * 集合の要素（ひな形）

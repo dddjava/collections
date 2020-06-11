@@ -1,6 +1,6 @@
 package org.dddjava.collections.series;
 
-import org.dddjava.collections.Element;
+import org.dddjava.collections.element.Element;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

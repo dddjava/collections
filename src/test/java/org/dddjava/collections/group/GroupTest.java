@@ -81,7 +81,7 @@ public class GroupTest {
 	public void minus() {
 		Group<MonthDay> expected = GroupBuilder.of(七草,桃の節句,七夕,菊の節句 );
 
-		assertTrue(節句.minus(祭日).equals(expected));
+		assertTrue(節句.difference(祭日).equals(expected));
 	}
 
 	@Test
@@ -135,8 +135,9 @@ public class GroupTest {
 	public void reduce()  {
 		BinaryOperator<MonthDay> 遅い節句 =
 				(one, another) -> one.isAfter(another) ? one : another;
-		MonthDay target = 節句.reduce(正月, 遅い節句);
-		assertEquals(菊の節句,target);
+		Group<MonthDay> result = 節句.reduce(正月, 遅い節句);
+		Group<MonthDay> expected = new Group(Set.of(菊の節句));
+		assertEquals(expected,result);
 	}
 
 	@Test
@@ -163,13 +164,25 @@ public class GroupTest {
 
 		BinaryOperator<Integer> 月の足し算 = (one,another)->one + another;
 
-		Integer resultWithTarget= 節句.map(月の整数値).reduce(0,月の足し算);
+		Group<Integer> resultWithTarget= 節句.map(月の整数値).reduce(0,月の足し算);
 
-		assertEquals(expected, resultWithTarget);
+		assertEquals(expected, resultWithTarget.toElement());
 
-		Integer resultWithoutTarget= 節句.map(月の整数値).reduce(月の足し算);
+		Group<Integer> resultWithoutTarget= 節句.map(月の整数値).reduce(月の足し算);
 
-		assertEquals(expected, resultWithoutTarget);
+		assertEquals(expected, resultWithoutTarget.toElement());
 	}
 
+	@Test
+	public void mapReduceInterval() {
+
+		Group<Integer> expected = new Group(Set.of(1+3+5+7+9)); //節句の月の整数値の合計
+
+		Function<MonthDay,Integer> 節句の年の日 = each -> each.atYear(2020).getDayOfYear();
+
+		BinaryOperator<Integer> 平均 = (one,another)-> one  + another ;
+
+		Group<Integer> resultWithTarget= 節句.map(節句の年の日).reduce(0,平均);
+		System.out.println(resultWithTarget);
+	}
 }
