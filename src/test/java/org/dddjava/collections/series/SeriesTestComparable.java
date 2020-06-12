@@ -18,8 +18,8 @@ public class SeriesTestComparable
 
 
     {
-        one = Series.of(abc,xyz);
-        another = Series.of(jkl);
+        one = SeriesBuilder.of(abc,xyz);
+        another = SeriesBuilder.of(jkl);
     }
 
 
@@ -32,11 +32,6 @@ public class SeriesTestComparable
     public void isEmpty() {
         Series<Element> target = new Series(Collections.emptyList());
         assertThat(target.isEmpty()).isTrue();
-    }
-
-    @Test
-    public void includes() {
-        assertThat(one.includes(abc)).isTrue();
     }
 
     @Test
@@ -62,15 +57,6 @@ public class SeriesTestComparable
     {
 
     }
-
-    @Test
-    public void selectComparable()
-    {
-        Series<Element> expected = Series.of(abc);
-        Series<Element> target = one.select(each->each.equals(abc));
-        assertThat(target).isEqualTo(expected);
-    }
-
 
     @Test
     public void reject()
@@ -100,11 +86,5 @@ public class SeriesTestComparable
     public void map()
     {
 
-    }
-
-    @Test
-    public void ofComparable(){
-        Series<Element> series = Series.of(abc, xyz);
-        assertThat(series.members.comparator()).isNull();
     }
 }
