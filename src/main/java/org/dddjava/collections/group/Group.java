@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * 集合（重複なし）
+ * 集合（重複なし・順序なし）
  * @param <T>
  */
 public class Group<T> {
@@ -29,7 +29,7 @@ public class Group<T> {
 	}
 
 	/**
-	 * 空集合かを検査する
+	 * 空集合か検査する
 	 * @return 空集合であればtrue
 	 */
 	public boolean isEmpty() {
@@ -37,7 +37,7 @@ public class Group<T> {
 	}
 
 	/**
-	 * この集合が指定された集合を包含しているか検査する
+	 * この集合が他の集合を包含しているか検査する
 	 * @param other 比較対象
 	 * @return 包含していればtrue
 	 */
@@ -87,7 +87,7 @@ public class Group<T> {
 	}
 
 	/**
-	 * 集合演算：
+	 * 集合演算：積集合
 	 * @param other
 	 * @return
 	 */
@@ -117,7 +117,7 @@ public class Group<T> {
 	}
 
 	/**
-	 * 条件に合う要素を一つだけ持つ集合を抽出する（存在しない場合、例外を送出）
+	 * 条件に合う要素を一つ持つ集合を抽出する（存在しない場合、例外を送出する）
 	 * @param predicate
 	 * @return
 	 */
@@ -129,7 +129,7 @@ public class Group<T> {
 	}
 
 	/**
-	 * 条件に合う要素を一つだけ持つ集合を抽出する（存在しない場合、既定の要素を使う）
+	 * 条件に合う要素を一つ持つ集合を抽出する（存在しない場合、既定の要素を使う）
 	 * @param predicate
 	 * @param defaultElement
 	 * @return
@@ -158,7 +158,12 @@ public class Group<T> {
 		return new Group(Set.of(result));
 	}
 
-	// 写像
+	/**
+	 * 写像
+	 * @param function　要素の型を変換するラムダ式またはメソッド参照
+	 * @param <R> 変換先の型
+	 * @return 型の変換結果の要素の集合
+	 */
 	@Deprecated
 	public <R> Group<R> map(Function<T,R> function) {
 		return new Group<>(elements.stream().map(function).collect(Collectors.toSet()));

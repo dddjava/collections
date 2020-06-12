@@ -1,22 +1,29 @@
 package org.dddjava.collections.element;
 
+import org.dddjava.collections.group.Numerical;
+
 import java.util.Objects;
 
 /**
- * 集合の要素（ひな形）
+ * 集合の要素（実装例）
  */
-public class Element implements Comparable<Element> {
+public class Element implements Comparable<Element> , Numerical {
 	String label;
-	int value;
+	long value;
 
-	public Element(String label, int value) {
+	public Element(String label, long value) {
 		this.label = label;
 		this.value = value;
 	}
 
 	@Override
+	public int intValue() {
+		return Math.toIntExact(value);
+	}
+
+	@Override
 	public int compareTo(Element other) {
-		return Integer.compare(value, other.value);
+		return Long.compare(value, other.value);
 	}
 
 	@Override
