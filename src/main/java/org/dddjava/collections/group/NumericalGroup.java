@@ -1,5 +1,7 @@
 package org.dddjava.collections.group;
 
+import org.dddjava.collections.element.Numerical;
+
 import java.util.*;
 import java.util.stream.IntStream;
 

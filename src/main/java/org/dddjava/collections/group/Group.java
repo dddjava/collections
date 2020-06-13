@@ -87,7 +87,7 @@ public class Group<T> {
 	}
 
 	/**
-	 * 集合演算：積集合
+	 * 集合演算：積集合（共通部分）
 	 * @param other
 	 * @return
 	 */

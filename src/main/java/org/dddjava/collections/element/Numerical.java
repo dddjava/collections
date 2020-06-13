@@ -1,4 +1,4 @@
-package org.dddjava.collections.group;
+package org.dddjava.collections.element;
 
 /**
  * 整数値を持つ

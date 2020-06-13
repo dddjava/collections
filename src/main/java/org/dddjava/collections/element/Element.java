@@ -1,7 +1,5 @@
 package org.dddjava.collections.element;
 
-import org.dddjava.collections.group.Numerical;
-
 import java.util.Objects;
 
 /**
@@ -28,7 +26,7 @@ public class Element implements Comparable<Element> , Numerical {
 
 	@Override
 	public boolean equals(Object other) {
-		Element element = (Element) other;
+		Element element = (Element) other; // Element以外の型との比較はキャスト例外を送出する
 		return value == element.value &&
 				Objects.equals(label, element.label);
 	}
