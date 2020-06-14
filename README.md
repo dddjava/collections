@@ -23,6 +23,14 @@ JavaのコレクションAPIは、実装や性能を重視した構成になっ�
 * コレクション生成はBuilderクラスに分離する（String/StringBuilderの関係）
 * 巨大なコレクション操作を考慮しない
 
+## 集合
+
+関心を分離するため、三種類の集合型を定義
+
+* Group : 集合の基本操作（検査、集合演算、filter, map）
+* NumericalGroup : 数値の集合の集約操作 (sum, average, max, min)
+* ReducibleGroup : 単一要素の集合（単集合）へ畳み込む操作(reduce)
+
 #### 参考
 
 コレクション操作の基本語彙の参考仕様

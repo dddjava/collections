@@ -3,7 +3,6 @@ package org.dddjava.collections.group;
 import org.junit.jupiter.api.Test;
 
 import java.time.*;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -111,36 +110,6 @@ public class GroupTest {
 	}
 
 	@Test
-	public void selectOne() {
-		Predicate<MonthDay> 七夕より後の節句 = each -> each.compareTo(七夕) > 0 ;
-		assertEquals(GroupBuilder.of(菊の節句), 節句.selectOne(七夕より後の節句));
-	}
-
-	@Test
-	public void selectOneThrowException() {
-		Predicate<MonthDay> 菊の節句より後の節句 = each -> each.compareTo(菊の節句) > 0 ;
-		assertThrows(NoSuchElementException.class, () -> 節句.selectOne(菊の節句より後の節句));
-	}
-
-	@Test
-	public void selectOneOrDefault() {
-		Predicate<MonthDay> 菊の節句より後の節句 = each -> each.compareTo(菊の節句) > 0 ;
-
-		Group<MonthDay> 既定値 = new Group<>(Set.of(七草));
-		Group<MonthDay> target = 節句.selectOneOrDefault(菊の節句より後の節句,七草);
-		assertEquals(既定値, target);
-	}
-
-	@Test
-	public void reduce()  {
-		BinaryOperator<MonthDay> 遅い節句 =
-				(one, another) -> one.isAfter(another) ? one : another;
-		Group<MonthDay> result = 節句.reduce(正月, 遅い節句);
-		Group<MonthDay> expected = new Group(Set.of(菊の節句));
-		assertEquals(expected,result);
-	}
-
-	@Test
 	public void mapTest() {
 		Function<MonthDay,Month> 月に = each -> each.getMonth();
 
@@ -153,36 +122,5 @@ public class GroupTest {
 		);
 
 		assertEquals(expected, 節句.map(月に));
-	}
-
-	@Test
-	public void mapReduce() {
-
-		Integer expected = 1+3+5+7+9; //節句の月の整数値の合計
-
-		Function<MonthDay,Integer> 月の整数値 = each -> each.getMonth().getValue();
-
-		BinaryOperator<Integer> 月の足し算 = (one,another)->one + another;
-
-		Group<Integer> resultWithTarget= 節句.map(月の整数値).reduce(0,月の足し算);
-
-		assertEquals(expected, resultWithTarget.toElement());
-
-		Group<Integer> resultWithoutTarget= 節句.map(月の整数値).reduce(月の足し算);
-
-		assertEquals(expected, resultWithoutTarget.toElement());
-	}
-
-	@Test
-	public void mapReduceInterval() {
-
-		Group<Integer> expected = new Group(Set.of(1+3+5+7+9)); //節句の月の整数値の合計
-
-		Function<MonthDay,Integer> 節句の年の日 = each -> each.atYear(2020).getDayOfYear();
-
-		BinaryOperator<Integer> 平均 = (one,another)-> one  + another ;
-
-		Group<Integer> resultWithTarget= 節句.map(節句の年の日).reduce(0,平均);
-		System.out.println(resultWithTarget);
 	}
 }

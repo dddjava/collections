@@ -43,8 +43,7 @@ public class GroupBuilder<T> {
      * @return
      */
     public static <T> Group<T> of(T... elements){
-        Collection<T> mutableCollection = Arrays.asList(elements);
-        return of(mutableCollection);
+        return of(Arrays.asList(elements));
     }
 
     /**

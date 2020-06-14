@@ -117,54 +117,11 @@ public class Group<T> {
 	}
 
 	/**
-	 * 条件に合う要素を一つ持つ集合を抽出する（存在しない場合、例外を送出する）
-	 * @param predicate
-	 * @return
-	 */
-	public Group<T> selectOne(Predicate<T> predicate) {
-		T result = elements.stream()
-				.filter(predicate).findFirst()
-				.orElseThrow(NoSuchElementException::new);
-		return new Group(Set.of(result));
-	}
-
-	/**
-	 * 条件に合う要素を一つ持つ集合を抽出する（存在しない場合、既定の要素を使う）
-	 * @param predicate
-	 * @param defaultElement
-	 * @return
-	 */
-	public Group<T> selectOneOrDefault(Predicate<T> predicate, T defaultElement) {
-		T result = elements.stream()
-			.filter(predicate).findFirst()
-			.orElse(defaultElement);
-		return new Group(Set.of(result));
-	}
-
-	/**
-	 * 集約（畳み込む）
-	 * @param identity 単位元
-	 * @param accumulator　集約を行うラムダ式またはメソッド参照
-	 * @return
-	 */
-	public Group<T> reduce(T identity, BinaryOperator<T> accumulator) {
-		T result = elements.stream().reduce(identity, accumulator);
-		return new Group(Set.of(result));
-	}
-
-	@Deprecated
-	public Group<T> reduce(BinaryOperator<T> accumulator) {
-		T result = elements.stream().reduce(accumulator).orElseThrow(NoSuchElementException::new);
-		return new Group(Set.of(result));
-	}
-
-	/**
 	 * 写像
 	 * @param function　要素の型を変換するラムダ式またはメソッド参照
 	 * @param <R> 変換先の型
 	 * @return 型の変換結果の要素の集合
 	 */
-	@Deprecated
 	public <R> Group<R> map(Function<T,R> function) {
 		return new Group<>(elements.stream().map(function).collect(Collectors.toSet()));
 	}
