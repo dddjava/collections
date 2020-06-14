@@ -29,6 +29,11 @@ public class GroupOfDays {
         return new GroupOfDays(result);
     }
 
+    public GroupOfDays intersect(GroupOfDays other) {
+        Group<LocalDate> result = elements.intersect(other.elements);
+        return new GroupOfDays(result);
+    }
+
     @Override
     public boolean equals(Object other) {
         GroupOfDays otherGroupOfDays = (GroupOfDays) other;
